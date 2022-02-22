@@ -15,6 +15,7 @@ directions = {
     "left": {"x": -1, "y": 0}
 }
 
+
 def avoid_walls(my_head: Dict[str, int], board_width: int, board_height: int, possible_moves: List[str]) -> List[str]:
     """
     my_head: Dictionary of x/y coordinates of the Battlesnake head.
@@ -83,9 +84,6 @@ def choose_move(data: dict) -> str:
     # print(f"My Battlesnakes body this turn is: {my_body}")
 
     possible_moves = ["up", "down", "left", "right"]
-
-    # Don't allow the Battlesnake to move back in on it's own neck
-    possible_moves = avoid_my_neck(my_head, my_body, possible_moves)
 
     # Don't allow the Battlesnake to move out of the board
     possible_moves = avoid_walls(my_head, board_width, board_height, possible_moves)
