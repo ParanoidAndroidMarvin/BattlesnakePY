@@ -1,5 +1,5 @@
-import server_logic
 import pytest
+from server_logic import avoid_walls
 
 
 @pytest.mark.parametrize("my_head, board_width, board_height, expected_result", [
@@ -11,5 +11,5 @@ import pytest
 ])
 def test_avoid_walls(my_head, board_width, board_height, expected_result):
     possible_moves = ["up", "down", "left", "right"]
-    server_logic.avoid_walls(my_head, board_width, board_height, possible_moves)
+    possible_moves = avoid_walls(my_head, board_width, board_height, possible_moves)
     assert possible_moves == expected_result
