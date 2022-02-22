@@ -1,61 +1,5 @@
 import random
-from typing import List, Dict
-
-"""
-This file can be a nice home for your move logic, and to write helper functions.
-
-We have started this for you, with a function to help remove the 'neck' direction
-from the list of possible moves!
-"""
-
-directions = {
-    "up": {"x": 0, "y": 1},
-    "down": {"x": 0, "y": -1},
-    "right": {"x": 1, "y": 0},
-    "left": {"x": -1, "y": 0}
-}
-
-
-def avoid_walls(my_head: Dict[str, int], board_width: int, board_height: int, possible_moves: List[str]) -> List[str]:
-    """
-    my_head: Dictionary of x/y coordinates of the Battlesnake head.
-          e.g. {"x": 0, "y": 0}
-    board_width: Width of the board (x-axis)
-    board_height: Height of the board (y-axis)
-    possible_moves: List of strings. Moves to pick from.
-          e.g. ["up", "down", "left", "right"]
-
-    return: The list of remaining possible_moves, with the 'neck' direction removed
-    """
-    if my_head["x"] == 0:
-        possible_moves.remove("left")
-    elif my_head["x"] == board_width - 1:
-        possible_moves.remove("right")
-
-    if my_head["y"] == 0:
-        possible_moves.remove("down")
-    elif my_head["y"] == board_height - 1:
-        possible_moves.remove("up")
-
-    return possible_moves
-
-
-def avoid_my_body(my_head: Dict[str, int], my_body: List[dict], possible_moves: List[str]) -> List[str]:
-    """
-    my_head: Dictionary of x/y coordinates of the Battlesnake head.
-            e.g. {"x": 0, "y": 0}
-    my_body: List of dictionaries of x/y coordinates for every segment of a Battlesnake.
-            e.g. [ {"x": 0, "y": 0}, {"x": 1, "y": 0}, {"x": 2, "y": 0} ]
-    possible_moves: List of strings. Moves to pick from.
-            e.g. ["up", "down", "left", "right"]
-
-    return: The list of remaining possible_moves, with the 'neck' direction removed
-    """
-    def not_in_body(move: str):
-        new_position = {"x": my_head["x"] + directions[move]["x"], "y": my_head["y"] + directions[move]["y"]}
-        return new_position not in my_body
-
-    return list(filter(not_in_body, possible_moves))
+from initial_filter import avoid_walls, avoid_body, avoid_other_snakes
 
 
 def choose_move(data: dict) -> str:
@@ -70,6 +14,10 @@ def choose_move(data: dict) -> str:
     for each move of the game.
 
     """
+
+    # ---------------------------------------------------------
+    # VARIABLES
+    # ---------------------------------------------------------
     my_head = data["you"]["head"]
     my_body = data["you"][
         "body"]
@@ -77,27 +25,27 @@ def choose_move(data: dict) -> str:
     board_width = data["board"]["width"]
     board_height = data["board"]["height"]
 
-    # TODO: uncomment the lines below so you can see what this data looks like in your output!
-    # print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
-    # print(f"All board data this turn: {data}")
-    # print(f"My Battlesnakes head this turn is: {my_head}")
-    # print(f"My Battlesnakes body this turn is: {my_body}")
+    snakes = data["board"]["snakes"]
 
     possible_moves = ["up", "down", "left", "right"]
 
+    # ---------------------------------------------------------
+    # STEP 1: FILTER POSSIBLE MOVES
+    # ---------------------------------------------------------
+
     # Don't allow the Battlesnake to move out of the board
     possible_moves = avoid_walls(my_head, board_width, board_height, possible_moves)
-
     # Don't allow the Battlesnake to collide with own body
-    possible_moves = avoid_my_body(my_head, my_body, possible_moves)
+    possible_moves = avoid_body(my_head, my_body, possible_moves)
+    # Don't allow the Battlesnake to collide with enemy snakes
+    possible_moves = avoid_other_snakes(my_head, snakes, possible_moves)
 
-    # TODO: Using information from 'data', don't let your Battlesnake pick a move that would collide with another Battlesnake
-
-    # TODO: Using information from 'data', make your Battlesnake move towards a piece of food on the board
+    # ---------------------------------------------------------
+    # STEP 2: SELECT BEST POSSIBLE MOVE
+    # ---------------------------------------------------------
 
     # Choose a random direction from the remaining possible_moves to move in, and then return that move
     move = random.choice(possible_moves)
-    # TODO: Explore new strategies for picking a move that are better than random
 
     print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {possible_moves}")
 
