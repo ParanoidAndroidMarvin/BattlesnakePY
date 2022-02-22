@@ -53,7 +53,7 @@ def avoid_walls(my_head: Dict[str, int], board_width: int, board_height: int, po
     return: The list of remaining possible_moves, with the 'neck' direction removed
     """
     def within_walls(move: str):
-        return board_width <= (my_head["x"] + directions[move]["x"]) < 0 or \
+        return board_width <= (my_head["x"] + directions[move]["x"]) < 0 and \
                board_height <= (my_head["y"] + directions[move]["y"]) < 0
     return list(filter(within_walls, possible_moves))
 
