@@ -52,10 +52,17 @@ def avoid_walls(my_head: Dict[str, int], board_width: int, board_height: int, po
 
     return: The list of remaining possible_moves, with the 'neck' direction removed
     """
-    def is_within_walls(move: str):
-        return not (board_width <= (my_head["x"] + directions[move]["x"]) < 0 or
-                    board_height <= (my_head["y"] + directions[move]["y"]) < 0)
-    return list(filter(is_within_walls, possible_moves))
+    if my_head["x"] == 0:
+        possible_moves.remove("left")
+    elif my_head["x"] == board_width - 1:
+        possible_moves.remove("right")
+
+    if my_head["y"] == 0:
+        possible_moves.remove("down")
+    elif my_head["y"] == board_height - 1:
+        possible_moves.remove("up")
+
+    return possible_moves
 
 
 def choose_move(data: dict) -> str:
